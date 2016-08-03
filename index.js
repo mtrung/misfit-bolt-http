@@ -19,7 +19,7 @@ const express = require('express'),
 
 const app = express(),
       port = parseInt(argv.p, 10) || 3000,
-      actions = ['state', 'hue', 'saturation', 'brightness'];
+      actions = ['state', 'RGBA', 'hue', 'saturation', 'brightness'];
 
 app.use(bodyParser.json());
 app.listen(port, () => { console.log(`listening on port ${port}`); });
