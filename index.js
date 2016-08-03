@@ -41,7 +41,9 @@ app.get(`/:id`, (request, response) => {
     async.series([
       (done) => { bolt.getRGBA(done); },
       (done) => { bolt.getHSB(done); },
-      (done) => { bolt.getState(done); }
+      (done) => { bolt.getState(done); },
+      (done) => { bolt.getName(done); },
+      (done) => { bolt.getGradualMode(done); }
     ], (error, values) => {
       debug(`Got ${bolt.id} values: ${values}`);
       if (error) {
@@ -49,6 +51,9 @@ app.get(`/:id`, (request, response) => {
       } else {
         response.send({
           id: bolt.id,
+          address: bolt.address,
+          name: values[3],
+          state: values[2],
           red: values[0][0],
           green: values[0][1],
           blue: values[0][2],
@@ -56,7 +61,7 @@ app.get(`/:id`, (request, response) => {
           hue: values[1][0],
           saturation: values[1][1],
           brightness: values[1][2],
-          state: values[2]
+          gradualMode: values[4]
         });
       }
     });
