@@ -23,10 +23,28 @@ function setColorInInterval(bolt) {
 function done2(key, value) {
     console.log(key+' = '+value);
 }
+function done(error, value) {
+    console.log('value = '+value);
+}
 
-Bolt.onConnect = function (bolt) {
-    console.log("onConnect");
+// toggle
+function action(bolt, done) {
+    bolt.getState((error, value) => {
+        //done2('state', value);
+        bolt.setState(!value, done);
+    });
+}
 
+function disconnect(bolt) {
+      bolt.disconnect( (error) => {
+        console.log("- disconnected");
+        // Bolt.stopDiscover(function (bolt) {
+        //     console.log("stopDiscoverAll");
+        // });
+      });
+}
+
+function onConnect(bolt) {
     // bolt.getState((error, value) => {done2('state', value);});
     // bolt.getRGBA((error, value) => {done2('RGBA', value);});
     // bolt.getHSB((error, value) => {done2('HSB', value);});
@@ -38,7 +56,7 @@ Bolt.onConnect = function (bolt) {
       (done) => { bolt.getHSB(done); },
       (done) => { bolt.getState(done); },
       (done) => { bolt.getName(done); },
-      (done) => { bolt.getGradualMode(done); }
+      (done) => { bolt.getGradualMode(done); },
     ], (error, values) => {
       if (error) {
         console.log(response);
@@ -46,30 +64,28 @@ Bolt.onConnect = function (bolt) {
         var response = {
           id: bolt.id,
           address: bolt.address,
-          name: values[3],
-          state: values[2],
           RGBA: values[0],
           HSB: values[1],
+          state: values[2],
+          name: values[3],
           gradualMode: values[4]
         };
         console.log(response);
+        action(bolt, () => {
+            //disconnect(bolt);
+        });
       }
-
-      Bolt.stopDiscover(function (bolt) {
-          console.log("stopDiscoverAll");
-      });
     });
 }
 
 // Bolt.init();
 
-
 // Discover every nearby Bolt
-Bolt.discover(function(bolt) {
+Bolt.discoverAll(function(bolt) {
   console.log("- discover " + bolt.id + ' ' + bolt.address);
   // Each time a bolt is discovered, connect to it
   bolt.connectAndSetUp(function(error) {
     console.log("- connect " + bolt.id + ' ' + bolt.address);
-    Bolt.onConnect(bolt);
+    onConnect(bolt);
   });
 });
